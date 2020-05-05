@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+  <head>
+    <script src="js/fnl-head.js" />
+    <script src="Magento_Cms::js/fnl-head2.js" />
+  </head>
+  <body>
+    <referenceContainer name="main">
+      <block class="Magento\Framework\View\Element\Template" name="fnl.init" template="Magento_Cms::html/fnl-init.phtml" after="-"/>
+    </referenceContainer>
+  </body>
+</page>
