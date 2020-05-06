@@ -1,7 +1,7 @@
 //create a module
 
 define(["jquery"], function ($) {
-    $("ol").on("click", "li", function () {
+    $("#init3").on("click", "li", function () {
         console.log(this);
     });
 });
