@@ -256,6 +256,7 @@ return [
         'Dotdigitalgroup_Chat' => 1,
         'FNL_Address' => 1,
         'FNL_Chapter2' => 1,
+        'FNL_Chapter3' => 1,
         'Klarna_Core' => 1,
         'Klarna_Ordermanagement' => 1,
         'Klarna_Kp' => 1,
