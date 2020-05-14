@@ -61,20 +61,21 @@ class InstallData implements InstallDataInterface
         $attributeSet = $this->attributeSetFactory->create();
         $attributeGroupId = $attributeSet->getDefaultGroupId($attributeSetId);
 
-        $eavSetup->addAttribute('customer_address', 'andrew_address_type',
-        [
-            'type' => 'varchar',
-            'input' => 'text',
+        $eavSetup->addAttribute('customer_address', 'andrew_address_type', [
+            'group' => 'General',
+            'type' => 'int',
+            'sort_order' => 1000,
+            'position' => 1000,
             'label' => 'Andrew Address Type',
+            'input' => 'select',
+            'source' => 'FNL\Address\Model\Source\Customdropdown',
+            'global' => \Magento\Eav\Model\Entity\Attribute\ScopedAttributeInterface::SCOPE_GLOBAL,
             'visible' => true,
             'required' => false,
             'user_defined' => true,
-            'system'=> false,
-            'group'=> 'General',
-            'global' => true,
             'visible_on_front' => true,
-            'sort_order' => 1000,
-            'position' => 1000,
+            'system'=> false,
+            'global' => true,
         ]);
 
         $customAttribute = $this->eavConfig->getAttribute('customer_address', 'andrew_address_type')
