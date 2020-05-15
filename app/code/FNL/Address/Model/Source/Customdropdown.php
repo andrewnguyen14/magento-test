@@ -8,8 +8,8 @@ class Customdropdown extends \Magento\Eav\Model\Entity\Attribute\Source\Abstract
         if ($this->_options === null) {
             $this->_options = [
                 ['label' => __('--Select--'), 'value' => ''],
-                ['label' => __('Residential'), 'value' => 1],
-                ['label' => __('Business'), 'value' => 2]
+                ['label' => __('Residential'), 'value' => 'Residential'],
+                ['label' => __('Business'), 'value' => 'Business']
             ];
         }
         return $this->_options;

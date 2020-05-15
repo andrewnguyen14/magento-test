@@ -63,7 +63,7 @@ class InstallData implements InstallDataInterface
 
         $eavSetup->addAttribute('customer_address', 'andrew_address_type', [
             'group' => 'General',
-            'type' => 'int',
+            'type' => 'varchar',
             'sort_order' => 1000,
             'position' => 1000,
             'label' => 'Andrew Address Type',
