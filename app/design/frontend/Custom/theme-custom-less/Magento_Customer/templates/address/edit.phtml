@@ -123,16 +123,14 @@
       </div>
     </div>
 
-    <div class="field">
-      <legend class="legend">
-        <span><?= $block->escapeHtml(__('Andrew Address Type')) ?></span>
-      </legend>
+    <!------------------------ Custom Address Type START ------------------------>
+    <div class="field required">
+      <label class="label" for="country"><span>Andrew Address Type</span></label>
       <div class="control">
-        <?= $block->getAndrewAddressType() ?>
+        <?= $block->getAllOptions() ?>
       </div>
     </div>
-
-
+    <!------------------------ Custom Address Type END ------------------------>
 
     <?php if ($block->isDefaultBilling()) : ?>
     <div class="message info">
