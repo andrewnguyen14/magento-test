@@ -127,7 +127,10 @@
     <div class="field required">
       <label class="label" for="country"><span>Andrew Address Type</span></label>
       <div class="control">
-        <?= $block->getAllOptions() ?>
+        <?php
+          $blockObj= $block->getLayout()->createBlock('FNL\Address\Block\Address');
+          echo $blockObj->sayHello();
+        ?>
       </div>
     </div>
     <!------------------------ Custom Address Type END ------------------------>
