@@ -128,22 +128,19 @@
       <label class="label" for="country"><span>Andrew Address Type</span></label>
       <div class="control">
         <?php 
-        $attribute= $this->getAddress()->getCustomAttribute('andrew_address_type');
+        $attribute = $this->getAddress()->getCustomAttribute('andrew_address_type')->getValue();
         echo '<pre>'.print_r($attribute,true).'</pre>';
         ?>
-        <select name="" id="andrew_address_type">
-          <option>
-            <?= ($block->getAddress()->getCustomAttribute('andrew_address_type') === null) ? "" : $block->getAddress()->getCustomAttribute('andrew_address_type')->getValue() ?>
-          </option>
-          <option value="Business">Business</option>
-          <option value="Residential">Residential</option>
+        <select name="andrew_address_type" id="andrew_address_type">
+
+          <option <?php if ( $attribute === "Business" ) echo 'selected' ?> value="Business">Business</option>
+          <option <?php if ( $attribute === "Residential" ) echo 'selected' ?> value="Residential">Residential</option>
         </select>
       </div>
     </div>
     <!------------------------ Custom Address Type END ------------------------>
 
-    <?php if ($block->isDefaultBilling()) : ?>
-    <div class="message info">
+    <?php if ($block->isDefaultBilling()) : ?> <div class="message info">
       <span><?= $block->escapeHtml(__("It's a default billing address.")) ?></span>
     </div>
     <?php elseif ($block->canSetAsDefaultBilling()) : ?>
