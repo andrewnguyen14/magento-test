@@ -131,8 +131,12 @@
         $attribute = $this->getAddress()->getCustomAttribute('andrew_address_type')->getValue();
         echo '<pre>'.print_r($attribute,true).'</pre>';
         ?>
+        <!-- Input -->
+        <input type="text" name="andrew_address_type"
+          value="<?= ($block->getAddress()->getCustomAttribute('andrew_address_type') === null) ? "" : $block->getAddress()->getCustomAttribute('andrew_address_type')->getValue(); ?>"
+          title="<?php echo __('andrew_address_type') ?>" class="input-text" id="andrew_address_type">
+        <!-- Select -->
         <select name="andrew_address_type" id="andrew_address_type">
-
           <option <?php if ( $attribute === "Business" ) echo 'selected' ?> value="Business">Business</option>
           <option <?php if ( $attribute === "Residential" ) echo 'selected' ?> value="Residential">Residential</option>
         </select>
