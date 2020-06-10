@@ -23,7 +23,7 @@ class InstallSchema implements InstallSchemaInterface
             $installer->getTable('fedex')
         )
 				->addColumn(
-					'test_order_id',
+					'order_number',
 					\Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
 					null,
 					[
@@ -32,15 +32,8 @@ class InstallSchema implements InstallSchemaInterface
 						'primary'  => true,
 						'unsigned' => true,
 					],
-					'Test Order Id'
+					'Order Number'
         ) 
-        ->addColumn(
-					'email',
-					\Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-					255,
-					['nullable => false'],
-					'Email'
-				)
         ->addColumn(
 					'tracking',
 					\Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
