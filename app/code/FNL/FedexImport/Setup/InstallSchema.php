@@ -28,39 +28,11 @@ class InstallSchema implements InstallSchemaInterface
                          'ID'
                      )
                      ->addColumn(
-                         'name',
+                         'message',
                          \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
                          255,
                          ['nullable => false'],
-                         'Name'
-                     )
-                     ->addColumn(
-                         'email',
-                         \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-                         255,
-                         [],
-                         'Email'
-                     )
-                     ->addColumn(
-                         'url_key',
-                         \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-                         255,
-                         [],
-                         'URL Key'
-                     )
-                     ->addColumn(
-                         'message',
-                         \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-                         '18K',
-                         [],
                          'Message'
-                     )
-                     ->addColumn(
-                         'status',
-                         \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
-                         1,
-                         [],
-                         'Fedex Status'
                      )
                      ->addColumn(
                          'created_at',
@@ -68,12 +40,7 @@ class InstallSchema implements InstallSchemaInterface
                          null,
                          ['nullable' => false, 'default' => \Magento\Framework\DB\Ddl\Table::TIMESTAMP_INIT],
                          'Created At'
-                     )->addColumn(
-                         'updated_at',
-                         \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
-                         null,
-                         ['nullable' => false, 'default' => \Magento\Framework\DB\Ddl\Table::TIMESTAMP_INIT_UPDATE],
-                         'Updated At')
+                     )
                      ->setComment('fedex Table');
             $installer->getConnection()->createTable($table);
   
@@ -81,10 +48,10 @@ class InstallSchema implements InstallSchemaInterface
                 $installer->getTable('fedex'),
                 $setup->getIdxName(
                     $installer->getTable('fedex'),
-                    ['name', 'email', 'url_key', 'message'],
+                    ['message'],
                     \Magento\Framework\DB\Adapter\AdapterInterface::INDEX_TYPE_FULLTEXT
                 ),
-                ['name', 'email', 'url_key', 'message'],
+                ['message'],
                 \Magento\Framework\DB\Adapter\AdapterInterface::INDEX_TYPE_FULLTEXT
             );
         }
