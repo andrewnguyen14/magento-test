@@ -1,3 +1,3 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_ImportExport:etc/import.xsd">
-  <entity name="fedex_import" label="Fedex Import" model="FNL\FedexImport\Model\Import\FedexImport" behaviorModel="Magento\ImportExport\Model\Source\Import\Behavior\Basic" />
+  <entity name="fedex" label="Fedex Import" model="FNL\FedexImport\Model\Import\FedexImport" behaviorModel="Magento\ImportExport\Model\Source\Import\Behavior\Basic" />
 </config>
