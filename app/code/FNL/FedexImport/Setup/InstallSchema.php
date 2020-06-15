@@ -25,14 +25,14 @@ class InstallSchema implements InstallSchemaInterface
                              'primary'  => true,
                              'unsigned' => true,
                          ],
-                         'ID'
+                         'Fedex ID'
                      )
                      ->addColumn(
-                         'message',
+                         'question',
                          \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
                          255,
                          ['nullable => false'],
-                         'Message'
+                         'Question'
                      )
                      ->addColumn(
                          'created_at',
@@ -48,10 +48,10 @@ class InstallSchema implements InstallSchemaInterface
                 $installer->getTable('fedex'),
                 $setup->getIdxName(
                     $installer->getTable('fedex'),
-                    ['message'],
+                    ['question'],
                     \Magento\Framework\DB\Adapter\AdapterInterface::INDEX_TYPE_FULLTEXT
                 ),
-                ['message'],
+                ['question'],
                 \Magento\Framework\DB\Adapter\AdapterInterface::INDEX_TYPE_FULLTEXT
             );
         }
