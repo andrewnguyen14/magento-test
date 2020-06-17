@@ -249,7 +249,7 @@ class FedexImport extends \Magento\ImportExport\Model\Import\Entity\AbstractEnti
             try {
                 $this->countItemsDeleted += $this->_connection->delete(
                     $this->_connection->getTableName($table),
-                    $this->_connection->quoteInto('entity_id IN (?)', $ids)
+                    $this->_connection->quoteInto('fedex_id IN (?)', $ids)
                 );
                 return true;
             } catch (\Exception $e) {
