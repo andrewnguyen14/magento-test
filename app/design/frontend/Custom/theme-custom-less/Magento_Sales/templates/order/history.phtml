@@ -41,9 +41,11 @@
         <td data-th="<?= $block->escapeHtmlAttr(__('Ship To')) ?>" class="col shipping">
           <?= $_order->getShippingAddress() ? $block->escapeHtml($_order->getShippingAddress()->getName()) : '&nbsp;' ?>
         </td>
+        <!-- -----fedex tracking----- -->
         <td data-th="<?= $block->escapeHtmlAttr(__('Fedex Tracking')) ?>" class="col tracking">
-          12345
+          <?= $block->escapeHtml($_order->getRealOrderId()) ?></td>
         </td>
+        <!-- -----fedex tracking----- -->
         <td data-th="<?= $block->escapeHtmlAttr(__('Order Total')) ?>" class="col total">
           <?= /* @noEscape */ $_order->formatPrice($_order->getGrandTotal()) ?></td>
         <td data-th="<?= $block->escapeHtmlAttr(__('Status')) ?>" class="col status">
