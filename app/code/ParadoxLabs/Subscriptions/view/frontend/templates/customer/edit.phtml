@@ -1,0 +1,868 @@
+<?php /** @var \ParadoxLabs\Subscriptions\Block\Customer\Edit $block */ ?>
+<?php /* @codingStandardsIgnoreFile */ ?>
+<?php $activeCard = $block->getCard(); ?>
+
+
+<?php
+$proteinPlusId = 5633;
+$ketoId = 5634;
+$paleoId = 5635;
+$veganStandardId = 5636;
+$veganLowCarbId = 5637;
+$ogId = 5638;
+
+$subscriptionData = $block->getSubscriptionData();
+$subscriptionName = $block->getMealPlanName();
+$hasAddOn = false;
+$subtotal = number_format($block->getQuoteSubtotal(),2);
+
+
+if (!empty($subscriptionData['meal_plan']))
+{
+    $mealPlanExclusions = [];
+    $mealPlanAllergies = [];
+    $mealPlan = $subscriptionData['meal_plan'];
+    if (!empty($mealPlan['exclusions']))
+    {
+        $mealPlanExclusions = preg_split('/\s*,\s*/', strtolower(str_replace(" ","",($mealPlan['exclusions']))), -1, PREG_SPLIT_NO_EMPTY);
+    }
+    if (!empty($mealPlan['allergies']))
+    {
+        $mealPlanAllergies = preg_split('/\s*,\s*/', strtolower(str_replace(" ","",($mealPlan['allergies']))), -1, PREG_SPLIT_NO_EMPTY);
+    }
+
+}
+else
+{
+    $mealPlan['sku'] = 'a_la_carte';
+    $mealPlan['breakfasts'] = '0';
+    $mealPlan['entrees'] = '0';
+    $mealPlanExclusions = [];
+    $mealPlanAllergies = [];
+}
+
+// echo '<pre>'.print_r($mealPlan, true).'</pre>';
+
+if (!empty($subscriptionData['add_on']))
+{
+    $addOns = $subscriptionData['add_on'];
+    $hasAddOn = true;
+}
+?>
+
+<div class="page-title-wrapper">
+  <h1 class="page-title">
+    <span id="meal-plan-name-title"><?php echo $subscriptionName?></span>
+    <?php /*
+        <span class="base"><input type="text" class="meal-plan-name-input" value="<?php echo "attribute"?>" </span>
+    */ ?>
+    <span class="ui-icon ui-icon-pencil edit-class"></span>
+    <span class="ui-icon ui-icon-disk save-class" style="display:none;">save</span>
+  </h1>
+</div>
+
+<p class="change-notice alert notice message">
+  <?php echo $block->escapeHtml(__('Any changes made after Monday noon will be applied for the following week.')); ?>
+</p>
+
+<form class="form-subscription-edit form-address-edit" action="<?php echo $block->escapeUrl($block->getSaveUrl()) ?>"
+  method="post" id="form-validate" enctype="multipart/form-data"
+  data-hasrequired="<?php echo $block->escapeQuote(__('* Required Fields')) ?>"
+  data-mage-init='{"subscriptionsEdit":{},"validation":{}}'>
+
+  <!-- <table id="saved-totals">
+    <tbody>
+      <tr>
+        <th>Item</th>
+        <th style="float:right;">Total</th>
+      </tr>
+    </tbody>
+  </table> -->
+  <input type="hidden" id="subtotal" name="subtotal" class="subtotal" value="<?php echo $subtotal?>">
+  <input type="hidden" name="meal-plan-name" id="meal-plan-name" class="meal-plan-name"
+    value="<?php echo $subscriptionName?>" />
+
+  <hr style="margin-top:0px;" />
+
+  <div class="meal-plan-image"><img src="<?= $subscriptionData['image'] ?>" /></div>
+  <div class="top-wrapper">
+    <!-- <div class="saved-totals-input"><?php echo $subtotal?></div> -->
+    <div class="meal-select-wrapper">
+      <label for="meal_plan">Meal Plan:</label>
+      <select name="meal_plan[sku]" id="meal_plan">
+        <option value="a-la-carte">A La Carte</option>
+        <option value="k" <?php echo ($mealPlan['sku'] == 'K') ? 'selected' : ''; ?>>Keto</option>
+        <option value="p" <?php echo ($mealPlan['sku'] == 'P') ? 'selected' : ''; ?>>Paleo</option>
+        <option value="pp" <?php echo ($mealPlan['sku'] == 'PP') ? 'selected' : ''; ?>>Protein+</option>
+        <option value="lc" <?php echo ($mealPlan['sku'] == 'LC') ? 'selected' : ''; ?>>Vegan Low Carb</option>
+        <option value="v" <?php echo ($mealPlan['sku'] == 'V') ? 'selected' : ''; ?>>Vegan Standard</option>
+      </select>
+    </div>
+
+    <hr>
+
+    <div class="meal-select-wrapper">
+      <label for="subscription">Subscription:</label>
+      <select name="subscription" id="subscription">
+        <option value="Every week" <?php echo ($block->isWeekly()) ? 'selected' : ''; ?>>Weekly</option>
+        <option value="Every 2 weeks" <?php echo ($block->isWeekly()) ? '' : 'selected'; ?>>Biweekly</option>
+      </select>
+    </div>
+    <div id="skip-biweekly">Skipping is not available for biweekly subscriptions.</div>
+
+
+    <div class="meal-plan-options" id="meal-plan-options"
+      <?php echo ($mealPlan['sku'] == 'a_la_carte') ? 'style="display:none;"': '' ?>>
+      <label for="breakfasts">Breakfasts:</label>
+      <select name="meal_plan[options][breakfasts]" id="meal_plan[options][breakfasts]">
+        <option value="30.00" <?php echo ($mealPlan['breakfasts'] == '5') ? 'selected' : ''; ?>>5 ($30.00)</option>
+        <option value="36.00" <?php echo ($mealPlan['breakfasts'] == '6') ? 'selected' : ''; ?>>6 + $36.00</option>
+        <option value="42.00" <?php echo ($mealPlan['breakfasts'] == '7') ? 'selected' : ''; ?>>7 + $42.00</option>
+      </select>
+
+      <label for="entrees">Entrees:</label>
+      <select name="meal_plan[options][entrees]" id="meal_plan[options][entrees]">
+        <option value="50.00" <?php echo ($mealPlan['entrees'] == '5') ? 'selected' : ''; ?>>5 + $50.00</option>
+        <option value="60.00" <?php echo ($mealPlan['entrees'] == '6') ? 'selected' : ''; ?>>6 + $60.00</option>
+        <option value="70.00" <?php echo ($mealPlan['entrees'] == '7') ? 'selected' : ''; ?>>7 + $70.00</option>
+        <option value="80.00" <?php echo ($mealPlan['entrees'] == '8') ? 'selected' : ''; ?>>8 + $80.00</option>
+        <option value="90.00" <?php echo ($mealPlan['entrees'] == '9') ? 'selected' : ''; ?>>9 + $90.00</option>
+        <option value="100.00" <?php echo ($mealPlan['entrees'] == '10') ? 'selected' : ''; ?>>10 + $100.00</option>
+        <option value="110.00" <?php echo ($mealPlan['entrees'] == '11') ? 'selected' : ''; ?>>11 + $110.00</option>
+        <option value="120.00" <?php echo ($mealPlan['entrees'] == '12') ? 'selected' : ''; ?>>12 + $120.00</option>
+        <option value="130.00" <?php echo ($mealPlan['entrees'] == '13') ? 'selected' : ''; ?>>13 + $130.00</option>
+        <option value="140.00" <?php echo ($mealPlan['entrees'] == '14') ? 'selected' : ''; ?>>14 + $140.00</option>
+      </select>
+      <label for="excluded">Excluded:</label>
+      <select name="meal_plan[options][excluded][]" id="exclusions" multiple>
+        <option value="animalproducts"
+          <?php echo (in_array('animalproducts',$mealPlanExclusions) == true) ? 'selected': ''?>>Animal Products
+        </option>
+        <option value="beans" <?php echo (in_array('beans',$mealPlanExclusions) == true) ? 'selected': ''?>>Beans
+        </option>
+        <option value="bellpepper" <?php echo (in_array('bellpepper',$mealPlanExclusions) == true) ? 'selected': ''?>>
+          Bell Pepper</option>
+        <option value="beyondmeat" <?php echo (in_array('beyondmeat',$mealPlanExclusions) == true) ? 'selected': ''?>>
+          Beyond Meat</option>
+        <option value="chia" <?php echo (in_array('chia',$mealPlanExclusions) == true) ? 'selected': ''?>>Chia</option>
+        <option value="chicken" <?php echo (in_array('chicken',$mealPlanExclusions) == true) ? 'selected': ''?>>Chicken
+        </option>
+        <option value="cilantro" <?php echo (in_array('cilantro',$mealPlanExclusions) == true) ? 'selected': ''?>>
+          Cilantro</option>
+        <option value="curry" <?php echo (in_array('curry',$mealPlanExclusions) == true) ? 'selected': ''?>>Curry
+        </option>
+        <option value="eggplant" <?php echo (in_array('eggplant',$mealPlanExclusions) == true) ? 'selected': ''?>>
+          Eggplant</option>
+        <option value="eggs" <?php echo (in_array('eggs',$mealPlanExclusions) == true) ? 'selected': ''?>>Eggs</option>
+        <option value="elk" <?php echo (in_array('elk',$mealPlanExclusions) == true) ? 'selected': ''?>>Elk</option>
+        <option value="garbanzobeans"
+          <?php echo (in_array('garbanzobeans',$mealPlanExclusions) == true) ? 'selected': ''?>>Garbanzo Beans</option>
+        <option value="mushroom" <?php echo (in_array('mushroom',$mealPlanExclusions) == true) ? 'selected': ''?>>
+          Mushroom</option>
+        <option value="nuts" <?php echo (in_array('nuts',$mealPlanExclusions) == true) ? 'selected': ''?>>Nuts</option>
+        <option value="redmeat" <?php echo (in_array('redmeat',$mealPlanExclusions) == true) ? 'selected': ''?>>Red Meat
+        </option>
+        <option value="rice" <?php echo (in_array('rice',$mealPlanExclusions) == true) ? 'selected': ''?>>Rice</option>
+        <option value="seafood" <?php echo (in_array('seafood',$mealPlanExclusions) == true) ? 'selected': ''?>>Seafood
+        </option>
+      </select>
+      <label for="allergies">Allergies:</label>
+      <select name="meal_plan[options][allergies][]" id="allergies" multiple>
+        <option value="dairy" <?php echo (in_array('dairy',$mealPlanAllergies) == true) ? 'selected': ''?>>Dairy
+        </option>
+        <option value="egg" <?php echo (in_array('egg',$mealPlanAllergies) == true) ? 'selected': ''?>>Egg</option>
+        <option value="fish" <?php echo (in_array('fish',$mealPlanAllergies) == true) ? 'selected': ''?>>Fish</option>
+        <option value="sesame" <?php echo (in_array('sesame',$mealPlanAllergies) == true) ? 'selected': ''?>>Sesame
+        </option>
+        <option value="shellfish" <?php echo (in_array('shellfish',$mealPlanAllergies) == true) ? 'selected': ''?>>Shell
+          Fish</option>
+        <option value="soy" <?php echo (in_array('soy',$mealPlanAllergies) == true) ? 'selected': ''?>>Soy</option>
+        <option value="treenut" <?php echo (in_array('treenut',$mealPlanAllergies) == true) ? 'selected': ''?>>Tree Nuts
+        </option>
+      </select>
+    </div>
+  </div>
+  <div class="added-items-wrapper">
+    <table id="added-items">
+      <tbody>
+        <tr>
+          <th>Added Item</th>
+          <th>QTY</th>
+          <th>Price</th>
+        </tr>
+      </tbody>
+
+      <?php if ($hasAddOn): ?>
+      <?php foreach($addOns as $addOn): ?>
+      <?php $addOnTotal = $addOn['price']*$addOn['qty']?>
+
+      <tbody class="sp-quantity" data-product-sku="<?php echo $addOn['sku']?>">
+        <tr>
+          <td><?php echo $addOn['name']?></td>
+          <td>
+            <div>
+              <div class="sp-minus fff"> <a class="ddd" href="#">-</a>
+              </div>
+              <input type="hidden" class="price-input" value="<?php echo $addOnTotal?>" />
+              <div class="sp-input">
+                <input type="text" class="quantity-input" name="items[<?php echo $addOn['sku']?>]"
+                  value="<?php echo $addOn['qty']?>" />
+              </div>
+              <div class="sp-plus fff"> <a class="ddd" href="#">+</a>
+              </div>
+            </div>
+
+          </td>
+          <td>
+            <div class="sp-total">
+              <input type="hidden" class="addon-orignal-price" value="<?= $addOn['price'] ?>" readonly />
+              <input type="text" class="total-input" value="<?php echo $addOnTotal?>" readonly />
+            </div>
+
+          </td>
+        </tr>
+      </tbody>
+      <?php endforeach; ?>
+      <?php endif; ?>
+    </table>
+  </div>
+
+
+  <div class="alacarte-wrapper">
+    <div class="add-alacarte-items" id="pp-alacarte"
+      <?php echo ($mealPlan['sku'] == 'PP') ? '' : 'style="display:none;"'; ?>>
+      <table class="add-to-plan">
+        <tbody class="add-plan-item">
+          <tr>
+            <td style="width:50%">
+              <label for="breakfast-and-snacks">Breakfast / Snack:</label>
+              <select class="a-la-carte-item" name="pp-breakfast-and-snacks" id="pp-breakfast-and-snacks">
+                <option value="search-default">Search Breakfast / Snack</option>
+                <?php foreach ($block->getProductCollection(3) as $product) : ?>
+                <?php if(in_array($proteinPlusId,preg_split("/,/",$product->getXsellUnder()))): ?>
+                <option value="pp-bulk" class="add-plan-select"
+                  data-options='{"sku":"<?php echo $product->getSku();?>", "price":"<?php echo number_format($product->getPrice(),2);?>"}'>
+                  <?php echo $product->getName() . " " . $this->helper('Magento\Framework\Pricing\Helper\Data')->currency(number_format($product->getPrice(),2),true,false);?>
+                </option>
+                <?php endif;?>
+                <?php endforeach;?>
+              </select>
+            </td>
+            <td>
+              <button name="pp-breakfast-and-snacks-button" id="pp-breakfast-and-snacks-button" type="button">Add to
+                plan</button>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="add-plan-item">
+          <tr>
+            <td style="width:50%">
+              <label for="entrees">Entrees:</label>
+              <select class="a-la-carte-item" name="pp-entrees" id="pp-entrees">
+                <option value="search-default">Search Entrees</option>
+                <?php foreach ($block->getProductCollection(4) as $product) : ?>
+                <?php if(in_array($proteinPlusId,preg_split("/,/",$product->getXsellUnder()))): ?>
+                <option value="pp-entrees" class="add-plan-select"
+                  data-options='{"sku":"<?php echo $product->getSku();?>", "price":"<?php echo number_format($product->getPrice(),2);?>"}'>
+                  <?php echo $product->getName() . " " . $this->helper('Magento\Framework\Pricing\Helper\Data')->currency(number_format($product->getPrice(),2),true,false);?>
+                </option>
+                <?php endif;?>
+                <?php endforeach;?>
+              </select>
+            </td>
+            <td>
+              <button name="pp-entrees-button" id="pp-entrees-button" type="button">Add to plan</button>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="add-plan-item">
+          <tr>
+            <td style="width:50%">
+              <label for="bulk">Bulk:</label>
+              <select class="a-la-carte-item" name="pp-bulk" id="pp-bulk">
+                <option value="search-default">Search Bulk</option>
+                <?php foreach ($block->getProductCollection(5) as $product) : ?>
+                <?php if(in_array($proteinPlusId,preg_split("/,/",$product->getXsellUnder()))): ?>
+                <option value="pp-bulk" class="add-plan-select"
+                  data-options='{"sku":"<?php echo $product->getSku();?>", "price":"<?php echo number_format($product->getPrice(),2);?>"}'>
+                  <?php echo $product->getName() . " " . $this->helper('Magento\Framework\Pricing\Helper\Data')->currency(number_format($product->getPrice(),2),true,false);?>
+                </option>
+                <?php endif;?>
+                <?php endforeach;?>
+              </select>
+            </td>
+            <td>
+              <button name="pp-bulk-button" id="pp-bulk-button" type="button">Add to plan</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+
+    <div class="add-alacarte-items" id="k-alacarte"
+      <?php echo ($mealPlan['sku'] == 'K') ? '' : 'style="display:none;"'; ?>>
+      <table class="add-to-plan">
+        <tbody class="add-plan-item">
+          <tr>
+            <td style="width:50%">
+              <label for="breakfast-and-snacks">Breakfast / Snack:</label>
+              <select class="a-la-carte-item" name="keto-breakfast-and-snacks" id="keto-breakfast-and-snacks">
+                <option value="search-default">Search Breakfast / Snack</option>
+                <?php foreach ($block->getProductCollection(3) as $product) : ?>
+                <?php if(in_array($ketoId,preg_split("/,/",$product->getXsellUnder()))): ?>
+                <option value="keto-bulk" class="add-plan-select"
+                  data-options='{"sku":"<?php echo $product->getSku();?>", "price":"<?php echo number_format($product->getPrice(),2);?>"}'>
+                  <?php echo $product->getName() . " " . $this->helper('Magento\Framework\Pricing\Helper\Data')->currency(number_format($product->getPrice(),2),true,false);?>
+                </option>
+                <?php endif;?>
+                <?php endforeach;?>
+              </select>
+            </td>
+            <td>
+              <button name="keto-breakfast-and-snacks-button" id="keto-breakfast-and-snacks-button" type="button">Add to
+                plan</button>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="add-plan-item">
+          <tr>
+            <td style="width:50%">
+              <label for="entrees">Entrees:</label>
+              <select class="a-la-carte-item" name="keto-entrees" id="keto-entrees">
+                <option value="search-default">Search Entrees</option>
+                <?php foreach ($block->getProductCollection(4) as $product) : ?>
+                <?php if(in_array($ketoId,preg_split("/,/",$product->getXsellUnder()))): ?>
+                <option value="keto-entrees" class="add-plan-select"
+                  data-options='{"sku":"<?php echo $product->getSku();?>", "price":"<?php echo number_format($product->getPrice(),2);?>"}'>
+                  <?php echo $product->getName() . " " . $this->helper('Magento\Framework\Pricing\Helper\Data')->currency(number_format($product->getPrice(),2),true,false);?>
+                </option>
+                <?php endif;?>
+                <?php endforeach;?>
+              </select>
+            </td>
+            <td>
+              <button name="keto-entrees-button" id="keto-entrees-button" type="button">Add to plan</button>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="add-plan-item">
+          <tr>
+            <td style="width:50%">
+              <label for="bulk">Bulk:</label>
+              <select class="a-la-carte-item" name="keto-bulk" id="keto-bulk">
+                <option value="search-default">Search Bulk</option>
+                <?php foreach ($block->getProductCollection(5) as $product) : ?>
+                <?php if(in_array($ketoId,preg_split("/,/",$product->getXsellUnder()))): ?>
+                <option value="keto-bulk" class="add-plan-select"
+                  data-options='{"sku":"<?php echo $product->getSku();?>", "price":"<?php echo number_format($product->getPrice(),2);?>"}'>
+                  <?php echo $product->getName() . " " . $this->helper('Magento\Framework\Pricing\Helper\Data')->currency(number_format($product->getPrice(),2),true,false);?>
+                </option>
+                <?php endif;?>
+                <?php endforeach;?>
+              </select>
+            </td>
+            <td>
+              <button name="keto-bulk-button" id="keto-bulk-button" type="button">Add to plan</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+
+    <div class="add-alacarte-items" id="p-alacarte"
+      <?php echo ($mealPlan['sku'] == 'P') ? '' : 'style="display:none;"'; ?>>
+      <table class="add-to-plan">
+        <tbody class="add-plan-item">
+          <tr>
+            <td style="width:50%">
+              <label for="breakfast-and-snacks">Breakfast / Snack:</label>
+              <select class="a-la-carte-item" name="paleo-breakfast-and-snacks" id="paleo-breakfast-and-snacks">
+                <option value="search-default">Search Breakfast / Snack</option>
+                <?php foreach ($block->getProductCollection(3) as $product) : ?>
+                <?php if(in_array($paleoId,preg_split("/,/",$product->getXsellUnder()))): ?>
+                <option value="paleo-bulk" class="add-plan-select"
+                  data-options='{"sku":"<?php echo $product->getSku();?>", "price":"<?php echo number_format($product->getPrice(),2);?>"}'>
+                  <?php echo $product->getName() . " " . $this->helper('Magento\Framework\Pricing\Helper\Data')->currency(number_format($product->getPrice(),2),true,false);?>
+                </option>
+                <?php endif;?>
+                <?php endforeach;?>
+              </select>
+            </td>
+            <td>
+              <button name="paleo-breakfast-and-snacks-button" id="paleo-breakfast-and-snacks-button" type="button">Add
+                to plan</button>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="add-plan-item">
+          <tr>
+            <td style="width:50%">
+              <label for="entrees">Entrees:</label>
+              <select class="a-la-carte-item" name="paleo-entrees" id="paleo-entrees">
+                <option value="search-default">Search Entrees</option>
+                <?php foreach ($block->getProductCollection(4) as $product) : ?>
+                <?php if(in_array($paleoId,preg_split("/,/",$product->getXsellUnder()))): ?>
+                <option value="paleo-entrees" class="add-plan-select"
+                  data-options='{"sku":"<?php echo $product->getSku();?>", "price":"<?php echo number_format($product->getPrice(),2);?>"}'>
+                  <?php echo $product->getName() . " " . $this->helper('Magento\Framework\Pricing\Helper\Data')->currency(number_format($product->getPrice(),2),true,false);?>
+                </option>
+                <?php endif;?>
+                <?php endforeach;?>
+              </select>
+            </td>
+            <td>
+              <button name="paleo-entrees-button" id="paleo-entrees-button" type="button">Add to plan</button>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="add-plan-item">
+          <tr>
+            <td style="width:50%">
+              <label for="bulk">Bulk:</label>
+              <select class="a-la-carte-item" name="paleo-bulk" id="paleo-bulk">
+                <option value="search-default">Search Bulk</option>
+                <?php foreach ($block->getProductCollection(5) as $product) : ?>
+                <?php if(in_array($paleoId,preg_split("/,/",$product->getXsellUnder()))): ?>
+                <option value="paleo-bulk" class="add-plan-select"
+                  data-options='{"sku":"<?php echo $product->getSku();?>", "price":"<?php echo number_format($product->getPrice(),2);?>"}'>
+                  <?php echo $product->getName() . " " . $this->helper('Magento\Framework\Pricing\Helper\Data')->currency(number_format($product->getPrice(),2),true,false);?>
+                </option>
+                <?php endif;?>
+                <?php endforeach;?>
+              </select>
+            </td>
+            <td>
+              <button name="paleo-bulk-button" id="paleo-bulk-button" type="button">Add to plan</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+
+    <div class="add-alacarte-items" id="v-alacarte"
+      <?php echo ($mealPlan['sku'] == 'V') ? '' : 'style="display:none;"'; ?>>
+      <table class="add-to-plan">
+        <tbody class="add-plan-item">
+          <tr>
+            <td style="width:50%">
+              <label for="breakfast-and-snacks">Breakfast / Snack:</label>
+              <select class="a-la-carte-item" name="vegan-standard-breakfast-and-snacks"
+                id="vegan-standard-breakfast-and-snacks">
+                <option value="search-default">Search Breakfast / Snack</option>
+                <?php foreach ($block->getProductCollection(3) as $product) : ?>
+                <?php if(in_array($veganStandardId,preg_split("/,/",$product->getXsellUnder()))): ?>
+                <option value="vegan-standard-bulk" class="add-plan-select"
+                  data-options='{"sku":"<?php echo $product->getSku();?>", "price":"<?php echo number_format($product->getPrice(),2);?>"}'>
+                  <?php echo $product->getName() . " " . $this->helper('Magento\Framework\Pricing\Helper\Data')->currency(number_format($product->getPrice(),2),true,false);?>
+                </option>
+                <?php endif;?>
+                <?php endforeach;?>
+              </select>
+            </td>
+            <td>
+              <button name="vegan-standard-breakfast-and-snacks-button" id="vegan-standard-breakfast-and-snacks-button"
+                type="button">Add to plan</button>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="add-plan-item">
+          <tr>
+            <td style="width:50%">
+              <label for="entrees">Entrees:</label>
+              <select class="a-la-carte-item" name="vegan-standard-entrees" id="vegan-standard-entrees">
+                <option value="search-default">Search Entrees</option>
+                <?php foreach ($block->getProductCollection(4) as $product) : ?>
+                <?php if(in_array($veganStandardId,preg_split("/,/",$product->getXsellUnder()))): ?>
+                <option value="vegan-standard-entrees" class="add-plan-select"
+                  data-options='{"sku":"<?php echo $product->getSku();?>", "price":"<?php echo number_format($product->getPrice(),2);?>"}'>
+                  <?php echo $product->getName() . " " . $this->helper('Magento\Framework\Pricing\Helper\Data')->currency(number_format($product->getPrice(),2),true,false);?>
+                </option>
+                <?php endif;?>
+                <?php endforeach;?>
+              </select>
+            </td>
+            <td>
+              <button name="vegan-standard-entrees-button" id="vegan-standard-entrees-button" type="button">Add to
+                plan</button>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="add-plan-item">
+          <tr>
+            <td style="width:50%">
+              <label for="bulk">Bulk:</label>
+              <select class="a-la-carte-item" name="vegan-standard-bulk" id="vegan-standard-bulk">
+                <option value="search-default">Search Bulk</option>
+                <?php foreach ($block->getProductCollection(5) as $product) : ?>
+                <?php if(in_array($veganStandardId,preg_split("/,/",$product->getXsellUnder()))): ?>
+                <option value="vegan-standard-bulk" class="add-plan-select"
+                  data-options='{"sku":"<?php echo $product->getSku();?>", "price":"<?php echo number_format($product->getPrice(),2);?>"}'>
+                  <?php echo $product->getName() . " " . $this->helper('Magento\Framework\Pricing\Helper\Data')->currency(number_format($product->getPrice(),2),true,false);?>
+                </option>
+                <?php endif;?>
+                <?php endforeach;?>
+              </select>
+            </td>
+            <td>
+              <button name="vegan-standard-bulk-button" id="vegan-standard-bulk-button" type="button">Add to
+                plan</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+
+    <div class="add-alacarte-items" id="lc-alacarte"
+      <?php echo ($mealPlan['sku'] == 'LC') ? '' : 'style="display:none;"'; ?>>
+      <table class="add-to-plan">
+        <tbody class="add-plan-item">
+          <tr>
+            <td style="width:50%">
+              <label for="breakfast-and-snacks">Breakfast / Snack:</label>
+              <select class="a-la-carte-item" name="vegan-low-carb-breakfast-and-snacks"
+                id="vegan-low-carb-breakfast-and-snacks">
+                <option value="search-default">Search Breakfast / Snack</option>
+                <?php foreach ($block->getProductCollection(3) as $product) : ?>
+                <?php if(in_array($veganLowCarbId,preg_split("/,/",$product->getXsellUnder()))): ?>
+                <option value="vegan-low-carb-bulk" class="add-plan-select"
+                  data-options='{"sku":"<?php echo $product->getSku();?>", "price":"<?php echo number_format($product->getPrice(),2);?>"}'>
+                  <?php echo $product->getName() . " " . $this->helper('Magento\Framework\Pricing\Helper\Data')->currency(number_format($product->getPrice(),2),true,false);?>
+                </option>
+                <?php endif;?>
+                <?php endforeach;?>
+              </select>
+            </td>
+            <td>
+              <button name="vegan-low-carb-breakfast-and-snacks-button" id="vegan-low-carb-breakfast-and-snacks-button"
+                type="button">Add to plan</button>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="add-plan-item">
+          <tr>
+            <td style="width:50%">
+              <label for="entrees">Entrees:</label>
+              <select class="a-la-carte-item" name="vegan-low-carb-entrees" id="vegan-low-carb-entrees">
+                <option value="search-default">Search Entrees</option>
+                <?php foreach ($block->getProductCollection(4) as $product) : ?>
+                <?php if(in_array($veganLowCarbId,preg_split("/,/",$product->getXsellUnder()))): ?>
+                <option value="vegan-low-carb-entrees" class="add-plan-select"
+                  data-options='{"sku":"<?php echo $product->getSku();?>", "price":"<?php echo number_format($product->getPrice(),2);?>"}'>
+                  <?php echo $product->getName() . " " . $this->helper('Magento\Framework\Pricing\Helper\Data')->currency(number_format($product->getPrice(),2),true,false);?>
+                </option>
+                <?php endif;?>
+                <?php endforeach;?>
+              </select>
+            </td>
+            <td>
+              <button name="vegan-low-carb-entrees-button" id="vegan-low-carb-entrees-button" type="button">Add to
+                plan</button>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="add-plan-item">
+          <tr>
+            <td style="width:50%">
+              <label for="bulk">Bulk:</label>
+              <select class="a-la-carte-item" name="vegan-low-carb-bulk" id="vegan-low-carb-bulk">
+                <option value="search-default">Search Bulk</option>
+                <?php foreach ($block->getProductCollection(5) as $product) : ?>
+                <?php if(in_array($veganLowCarbId,preg_split("/,/",$product->getXsellUnder()))): ?>
+                <option value="vegan-low-carb-bulk" class="add-plan-select"
+                  data-options='{"sku":"<?php echo $product->getSku();?>", "price":"<?php echo number_format($product->getPrice(),2);?>"}'>
+                  <?php echo $product->getName() . " " . $this->helper('Magento\Framework\Pricing\Helper\Data')->currency(number_format($product->getPrice(),2),true,false);?>
+                </option>
+                <?php endif;?>
+                <?php endforeach;?>
+              </select>
+            </td>
+            <td>
+              <button name="vegan-low-carb-bulk-button" id="vegan-low-carb-bulk-button" type="button">Add to
+                plan</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+
+
+    <div class="add-alacarte-items" id="a-la-carte-alacarte"
+      <?php echo ($mealPlan['sku'] == 'a_la_carte') ? '' : 'style="display:none;"'; ?>>
+      <table class="add-to-plan">
+        <tbody class="add-plan-item">
+          <tr>
+            <td style="width:50%">
+              <label for="breakfast-and-snacks">Breakfast / Snack:</label>
+              <select class="a-la-carte-item" name="a-la-carte-breakfast-and-snacks"
+                id="a-la-carte-breakfast-and-snacks">
+                <option value="search-default">Search Breakfast / Snack</option>
+                <?php foreach ($block->getProductCollection(3) as $product) : ?>
+                <option value="a-la-carte-bulk" class="add-plan-select"
+                  data-options='{"sku":"<?php echo $product->getSku();?>", "price":"<?php echo number_format($product->getPrice(),2);?>"}'>
+                  <?php echo $product->getName() . " " . $this->helper('Magento\Framework\Pricing\Helper\Data')->currency(number_format($product->getPrice(),2),true,false);?>
+                </option>
+                <?php endforeach;?>
+              </select>
+            </td>
+            <td>
+              <button name="a-la-carte-breakfast-and-snacks-button" id="a-la-carte-breakfast-and-snacks-button"
+                type="button">Add to plan</button>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="add-plan-item">
+          <tr>
+            <td style="width:50%">
+              <label for="entrees">Entrees:</label>
+              <select class="a-la-carte-item" name="a-la-carte-entrees" id="a-la-carte-entrees">
+                <option value="search-default">Search Entrees</option>
+                <?php foreach ($block->getProductCollection(4) as $product) : ?>
+                <option value="a-la-carte-entrees" class="add-plan-select"
+                  data-options='{"sku":"<?php echo $product->getSku();?>", "price":"<?php echo number_format($product->getPrice(),2);?>"}'>
+                  <?php echo $product->getName() . " " . $this->helper('Magento\Framework\Pricing\Helper\Data')->currency(number_format($product->getPrice(),2),true,false);?>
+                </option>
+                <?php endforeach;?>
+              </select>
+            </td>
+            <td>
+              <button name="a-la-carte-entrees-button" id="a-la-carte-entrees-button" type="button">Add to plan</button>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="add-plan-item">
+          <tr>
+            <td style="width:50%">
+              <label for="bulk">Bulk:</label>
+              <select class="a-la-carte-item" name="a-la-carte-bulk" id="a-la-carte-bulk">
+                <option value="search-default">Search Bulk</option>
+                <?php foreach ($block->getProductCollection(5) as $product) : ?>
+                <option value="a-la-carte-bulk" class="add-plan-select"
+                  data-options='{"sku":"<?php echo $product->getSku();?>", "price":"<?php echo number_format($product->getPrice(),2);?>"}'>
+                  <?php echo $product->getName() . " " . $this->helper('Magento\Framework\Pricing\Helper\Data')->currency(number_format($product->getPrice(),2),true,false);?>
+                </option>
+                <?php endforeach;?>
+              </select>
+            </td>
+            <td>
+              <button name="a-la-carte-bulk-button" id="a-la-carte-bulk-button" type="button">Add to plan</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <hr style="clear:both;" />
+  <table id="new-totals" style="width:50%;margin:auto;">
+    <tbody>
+      <tr>
+        <td style="font-size: 20px;color:#04a57a;text-align:right; vertical-align: middle;">Total:</td>
+        <td style="text-align:left;" id="new-total-field">
+          <input style="border:1px solid #FFF;font-size: 20px;" type="text" class="new-total-input"
+            value="<?php echo $subtotal?>" readonly>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <hr style="padding-bottom:50px;" />
+  <div class="payment-wrapper">
+    <fieldset class="fieldset">
+      <legend class="legend"><span><?php echo $block->escapeHtml(__('Payment Information')) ?></span></legend><br>
+      <?php echo $block->getBlockHtml('formkey')?>
+
+      <div class="field card required">
+        <label class="label"
+          for="tokenbase_id"><span><?php echo $block->escapeHtml(__('Payment Account')) ?></span></label>
+        <div class="control">
+          <select name="tokenbase_id" id="tokenbase_id" class="validate-select control-select">
+            <?php /** @var \Magento\Vault\Api\Data\PaymentTokenInterface $card */ ?>
+            <?php $cards = $block->getCustomerCards(); ?>
+            <?php foreach ($cards as $card): ?>
+            <option value="<?php echo $block->escapeQuote($card->getPublicHash()); ?>"
+              <?php if ($activeCard !== null && $card->getPublicHash() === $activeCard->getPublicHash()): ?>
+              selected="selected" <?php endif; ?> title="<?php echo $block->escapeQuote(__('Payment Account')) ?>">
+              <?php echo $block->escapeHtml($block->getCardLabel($card)); ?></option>
+            <?php endforeach; ?>
+          </select>
+        </div>
+      </div>
+      <?php if (!empty($block->getTokenbaseHelper()->getActiveMethods())): ?>
+      <div class="field">
+        <p>
+          <?php echo $block->escapeHtml(__('To change your payment options, please go to')); ?>
+          <a href="<?php echo $block->escapeUrl($block->getUrl('customer/paymentinfo')); ?>"
+            target="_blank"><?php echo $block->escapeHtml(__('My Payment Data')); ?></a>.
+        </p>
+      </div>
+      <?php endif; ?>
+    </fieldset>
+  </div>
+  <div class="shipping-wrapper">
+    <?php if ((bool)$block->getSubscription()->getQuote()->getIsVirtual() === false): ?>
+    <?php echo $block->getChildHtml('subscriptions_edit_shipping'); ?>
+    <?php endif; ?>
+    <?php echo $block->getChildHtml('additional'); ?>
+  </div>
+  <div class="actions-toolbar widget">
+    <div class="primary">
+      <button type="submit" class="action save primary"
+        title="<?php echo $block->escapeQuote(__('Save Subscription')) ?>">
+        <span><?php echo $block->escapeHtml(__('Save Subscription')) ?></span>
+      </button>
+    </div>
+    <div class="secondary">
+      <a class="action back"
+        href="<?php echo $block->escapeUrl($block->getBackUrl()) ?>"><span><?php echo $block->escapeHtml(__('Go back')) ?></span></a>
+    </div>
+  </div>
+</form>
+
+<script type="text/javascript">
+require(['jquery', 'js/select2.min'], function($) {
+  $('#exclusions').select2({
+    placeholder: 'Select Exclusions',
+    maximumSelectionLength: 3,
+    // closeOnSelect: false
+  });
+  $('#allergies').select2({
+    placeholder: 'Add any food allergies',
+    // closeOnSelect: false
+  });
+})
+</script>
+
+<style>
+.add-to-plan button {
+  margin: 20px 0 0 0
+}
+
+.sp-quantity {
+  width: 124px;
+  height: 42px;
+}
+
+.sp-minus {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #e1e1e1;
+  float: left;
+  text-align: center;
+}
+
+.sp-input {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #e1e1e1;
+  border-left: 0px solid black;
+  float: left;
+}
+
+.sp-plus {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #e1e1e1;
+  border-left: 0px solid #e1e1e1;
+  float: left;
+  text-align: center;
+}
+
+.sp-input input {
+  width: 40px;
+  height: 34px;
+  text-align: center;
+  border: none;
+}
+
+.sp-input input:focus {
+  border: none;
+}
+
+.sp-minus a,
+.sp-plus a {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding-top: 5px;
+}
+
+.top-wrapper {
+  width: 80%;
+  float: right;
+}
+
+.added-items-wrapper {
+  width: 80%;
+  float: right;
+}
+
+.alacarte-wrapper {
+  width: 80%;
+  float: right;
+  clear: both;
+  margin-bottom: 25px;
+}
+
+.meal-plan-image {
+  width: 18%;
+  float: left;
+}
+
+.meal-select-wrapper {
+  width: 20%;
+}
+
+.saved-totals-input {
+  width: 18%;
+  float: right;
+  text-align: right;
+  margin-right: 15px;
+}
+
+#saved-totals th {
+  font-weight: normal;
+}
+
+.payment-wrapper {
+  clear: both;
+  width: 49%;
+  float: left;
+}
+
+.shipping-wrapper {
+  width: 49%;
+  float: right;
+}
+
+#added-items tbody:first-child {
+  border-bottom: 1px solid #ccc;
+}
+
+.change-notice {
+  font-size: 12px;
+}
+
+.page-title {
+  margin-bottom: 5px;
+}
+
+label {
+  font-weight: bold;
+}
+
+.meal-plan-options select {
+  margin: 10px 0 20px 0;
+}
+
+.meal-plan-options {
+  width: 60%;
+}
+
+#skip-biweekly {
+  margin-bottom: 20px;
+  font-size: 12px;
+}
+</style>
