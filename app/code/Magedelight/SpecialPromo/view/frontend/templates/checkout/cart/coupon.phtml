@@ -1,0 +1,47 @@
+<?php
+/**
+ * Magedelight
+ * Copyright (C) 2018 Magedelight <info@magedelight.com>
+ *
+ * @category Magedelight
+ * @package Magedelight_SpecialPromo
+ * @copyright Copyright (c) 2018 Mage Delight (http://www.magedelight.com/)
+ * @license http://opensource.org/licenses/gpl-3.0.html GNU General Public License,version 3 (GPL-3.0)
+ * @author Magedelight <info@magedelight.com>
+ */
+?>
+<div class="coupon-section summary title">
+    <div id="checkout-messages" data-role="checkout-messages" class="messages" style="display: none;">
+        <div role="alert" class="message message-success success">
+            <div class="message-text"></div>
+        </div>
+    </div>    
+    <div class="actions-toolbar">
+        <div class="primary">
+            <a class="action apply primary" id="apply_coupon_button" href="javascript:void(0)">
+                <span><?php echo strlen($block->getCouponCode()) ? 'Edit Coupon' : 'Apply Coupon' ?></span>
+            </a>
+        </div>
+    </div>
+</div>
+<div id="apply_coupon_form" style="display:none;">
+    <form id="md-discount-coupon-form"
+          action="<?php /* @escapeNotVerified */ echo $block->getUrl('specialpromo/cart/couponPost') ?>"
+          method="post"
+          data-mage-init='{"discountCode":{"couponCodeSelector": "#coupon_code",
+          "removeCouponSelector": "#remove-coupon",
+          "applyButton": "button.action.apply",
+          "cancelButton": "button.action.cancel"}}'>
+        <img src="<?php echo $this->getViewFileUrl('Magedelight_SpecialPromo::images/ajax-loader.gif'); ?>" class="special_promo_loader"/>
+        <div class="md_discount_coupon_section">
+            <?php echo $block->getChildHtml('md.coupon.block.form'); ?>
+        </div>
+    </form>
+</div>
+<script>
+    require([
+        'Magedelight_SpecialPromo/js/applyCoupon',
+    ], function(applyCoupon) {
+        applyCoupon({"loader":"<?php echo $this->getViewFileUrl('images/loader-1.gif'); ?>"});
+    })
+</script>

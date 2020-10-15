@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * Magedelight
+ * Copyright (C) 2018 Magedelight <info@magedelight.com>
+ *
+ * @category Magedelight
+ * @package Magedelight_SpecialPromo
+ * @copyright Copyright (c) 2018 Mage Delight (http://www.magedelight.com/)
+ * @license http://opensource.org/licenses/gpl-3.0.html GNU General Public License,version 3 (GPL-3.0)
+ * @author Magedelight <info@magedelight.com>
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="special_promo" translate="label" sortOrder="20" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+            <class>separator-top</class>
+            <label>Advance Promotions</label>
+            <tab>magedelight</tab>
+            <resource>Magedelight_SpecialPromo::config_root</resource>
+            <group id="general" translate="label" sortOrder="1" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>General Configuration</label>                
+                <field id="enable" translate="label" sortOrder="20" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Advance Promotions</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>               
+            </group>            
+            <group id="display" translate="label" sortOrder="2" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Display Configuration</label>
+                <field id="discount_button" translate="label" sortOrder="10" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Discount Button Style</label>
+                    <source_model>Magedelight\SpecialPromo\Model\Config\Source\DiscountButton</source_model>
+                </field>
+                <field id="dispay_discription" translate="label" sortOrder="20" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Show Description</label>                    
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="special_promo/display/discount_button">1</field>
+                    </depends>
+                </field> 
+                <field id="display_valid_till" translate="label" sortOrder="30" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Show Valid Till</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="special_promo/display/discount_button">1</field>
+                    </depends>                    
+                </field>                                                             
+            </group>                
+        </section>
+    </system>
+</config>

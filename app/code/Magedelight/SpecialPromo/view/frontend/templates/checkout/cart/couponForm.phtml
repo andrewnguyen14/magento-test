@@ -1,0 +1,79 @@
+<?php
+/**
+ * Magedelight
+ * Copyright (C) 2018 Magedelight <info@magedelight.com>
+ *
+ * @category Magedelight
+ * @package Magedelight_SpecialPromo
+ * @copyright Copyright (c) 2018 Mage Delight (http://www.magedelight.com/)
+ * @license http://opensource.org/licenses/gpl-3.0.html GNU General Public License,version 3 (GPL-3.0)
+ * @author Magedelight <info@magedelight.com>
+ */
+?>
+
+<?php $coupons = $block->getCouponList();?>
+<div class="md_discount_coupon_inner">
+    <div class="fieldset coupon<?php echo strlen($block->getCouponCode()) ? ' applied' : '' ?>">
+        <input name="coupon_code" value="<?php echo $block->escapeHtml($block->getCouponCode()) ?>" type="hidden" id="coupon_code">
+        <input type="hidden" name="remove" id="remove-coupon" value="<?php echo strlen($block->getCouponCode()) ? '1' : '0' ?>" />
+        <div class="field">
+            <label for="md_coupon_code_text" class="label"><span><?php echo /* @escapeNotVerified */ __('Enter Coupon code') ?></span></label>
+            <div class="control">
+                <input type="text" class="input-text" id="md_coupon_code_text" name="md_coupon_code_text" value="<?php echo $block->escapeHtml($block->getCouponCode()) ?>" placeholder="<?php echo $block->escapeHtml(__('Enter coupon code')) ?>" />
+            </div>
+        </div>
+    </div>
+    <?php if (!empty($coupons)) : ?>
+        <h2 class="or_hr_line"><span>OR</span></h2>
+        <div class="coupon_data-box">
+            <?php foreach ($coupons as $validCouponCode => $data) : ?>
+                <div class="coupon_data <?php echo ($block->isSelectedCoupon($validCouponCode))?'active':'' ?>">
+                    <span class="coupon_option">
+                        <input name="md_coupon_code" class="md_coupon_code_radio" value="<?php echo $validCouponCode; ?>" type="radio" <?php echo ($block->isSelectedCoupon($validCouponCode))?"checked='checked'":'' ?>>
+                        <label></label>
+                    </span>
+                    <span class="coupon_code_md"><?php echo $validCouponCode; ?></span>
+                    <div class="coupon_desc"> 
+                        <span class="sep"></span>
+                        <?php if ($this->getDescription($data)) : ?>
+                        <div class="coupon_info">
+                            <ul>
+                                <li><?php echo $this->getDescription($data) ?></li>
+                            </ul>
+                        </div>
+                        <span class="sep"></span>
+                        <?php endif; ?>
+                        <?php if ($this->getExpirationDate($data)) : ?>
+                            <span class="coupon_valid"><?php echo $this->getExpirationDate($data); ?></span>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
+    <div class="actions-toolbar">
+        <div class="primary">
+            <button class="action apply primary coupon_action_button" id="coupon_apply_button" type="submit" value="<?php echo /* @escapeNotVerified */ __('Apply Discount') ?>">
+                <span><?php echo /* @escapeNotVerified */ __('Apply Discount') ?></span>
+            </button>
+        </div>
+    <?php if ($block->getCouponCode()) : ?>
+        <div class="primary">
+            <button  type="submit" class="action cancel primary coupon_action_button" id="coupon_cancel_button" value="<?php echo /* @escapeNotVerified */ __('Cancel Coupon') ?>"><span><?php echo /* @escapeNotVerified */ __('Cancel Coupon') ?></span></button>
+        </div>
+    <?php endif; ?>
+    </div>        
+</div>
+
+<script type="text/javascript">
+    require(['jquery'],function($){
+        $(function() {
+            var $radioButtons = $('input.md_coupon_code_radio[type="radio"]');
+            $radioButtons.click(function() {
+                $radioButtons.each(function() {
+                    $(this).closest('.coupon_data').toggleClass('active', this.checked);
+                });
+            });
+        });
+    });
+</script>

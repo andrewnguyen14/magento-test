@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Magedelight
+ * Copyright (C) 2018 Magedelight <info@magedelight.com>
+ *
+ * @category Magedelight
+ * @package Magedelight_SpecialPromo
+ * @copyright Copyright (c) 2017 Mage Delight (http://www.magedelight.com/)
+ * @license http://opensource.org/licenses/gpl-3.0.html GNU General Public License,version 3 (GPL-3.0)
+ * @author Magedelight <info@magedelight.com>
+ */
+-->
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Magento\SalesRule\Model\Rule\DataProvider">
+        <plugin name="magedelight_promos" type="Magedelight\SpecialPromo\Plugin\Model\Rule\DataProvider" />
+    </type>
+    <type name="Magento\Rule\Model\Condition\AbstractCondition">
+        <plugin name="magedelight_new_operator_option" type="Magedelight\SpecialPromo\Plugin\Model\Condition\AbstractCondition" />
+    </type>
+
+    <!-- Adding Menu -->
+    <type name="Magento\Backend\Model\Menu\Item">
+        <plugin name="md_specialpromo_menu_item_newtab" type="Magedelight\SpecialPromo\Plugin\Magento\Backend\Model\Menu\Item" />
+    </type>
+</config>

@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Magedelight
+ * Copyright (C) 2018 Magedelight <info@magedelight.com>
+ *
+ * @category Magedelight
+ * @package Magedelight_SpecialPromo
+ * @copyright Copyright (c) 2018 Mage Delight (http://www.magedelight.com/)
+ * @license http://opensource.org/licenses/gpl-3.0.html GNU General Public License,version 3 (GPL-3.0)
+ * @author Magedelight <info@magedelight.com>
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+   <type name="Magento\Checkout\Model\CompositeConfigProvider">
+       <arguments>
+           <argument name="configProviders" xsi:type="array">
+               <item name="cms_block_config_provider" xsi:type="object">Magedelight\SpecialPromo\Model\ConfigProvider</item>
+           </argument>
+       </arguments>
+   </type>
+    <type name="Magento\Checkout\Block\Checkout\LayoutProcessor">
+        <plugin name="plugin_layoutprocessor" type="Magedelight\SpecialPromo\Plugin\Checkout\Block\LayoutProcessor"/>
+    </type> 
+</config>
