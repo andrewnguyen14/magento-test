@@ -240,6 +240,7 @@ return [
         'Klarna_Kp' => 1,
         'Magento_PaypalReCaptcha' => 1,
         'MSP_TwoFactorAuth' => 1,
+        'Magedelight_SpecialPromo' => 0,
         'ParadoxLabs_TokenBase' => 1,
         'ParadoxLabs_Subscriptions' => 1,
         'ParadoxLabs_Authnetcim' => 1,
